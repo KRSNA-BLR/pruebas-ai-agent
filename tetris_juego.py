@@ -36,9 +36,11 @@ PIEZAS = [
 ]
 
 def crear_matriz():
+    """Crea una matriz vacía para el tablero de juego."""
     return [[0 for _ in range(COLUMNAS)] for _ in range(FILAS)]
 
 def colision(matriz, pieza, offset):
+    """Verifica si hay colisión de la pieza con el tablero o con otras piezas."""
     off_x, off_y = offset
     for y, fila in enumerate(pieza):
         for x, celda in enumerate(fila):
@@ -50,6 +52,7 @@ def colision(matriz, pieza, offset):
     return False
 
 def unir_pieza(matriz, pieza, offset, color):
+    """Une la pieza actual al tablero en la posición indicada."""
     off_x, off_y = offset
     for y, fila in enumerate(pieza):
         for x, celda in enumerate(fila):
@@ -57,6 +60,7 @@ def unir_pieza(matriz, pieza, offset, color):
                 matriz[y + off_y][x + off_x] = color
 
 def eliminar_lineas(matriz):
+    """Elimina las líneas completas en el tablero y devuelve la nueva matriz."""
     nuevas = [fila for fila in matriz if 0 in fila]
     lineas_eliminadas = FILAS - len(nuevas)
     for _ in range(lineas_eliminadas):
@@ -64,10 +68,12 @@ def eliminar_lineas(matriz):
     return nuevas, lineas_eliminadas
 
 def rotar(pieza):
+    """Rota la pieza 90 grados en sentido horario."""
     return [list(fila) for fila in zip(*pieza[::-1])]
 
 class Tetris:
     def __init__(self):
+        """Inicializa el juego de Tetris."""
         self.matriz = crear_matriz()
         self.nueva_pieza()
         self.puntaje = 0
@@ -76,6 +82,7 @@ class Tetris:
         self.game_over = False
 
     def nueva_pieza(self):
+        """Genera una nueva pieza en una posición inicial aleatoria."""
         self.tipo = random.randint(0, len(PIEZAS) - 1)
         self.pieza = [fila[:] for fila in PIEZAS[self.tipo]]
         self.color = self.tipo + 1
@@ -85,10 +92,12 @@ class Tetris:
             self.game_over = True
 
     def mover(self, dx):
+        """Mueve la pieza actual a la izquierda o derecha."""
         if not colision(self.matriz, self.pieza, (self.x + dx, self.y)):
             self.x += dx
 
     def bajar(self):
+        """Baja la pieza actual una posición en el tablero."""
         if not colision(self.matriz, self.pieza, (self.x, self.y + 1)):
             self.y += 1
         else:
@@ -109,16 +118,19 @@ class Tetris:
                 self.nueva_pieza()
 
     def rotar(self):
+        """Rota la pieza actual 90 grados en sentido horario."""
         nueva = rotar(self.pieza)
         if not colision(self.matriz, nueva, (self.x, self.y)):
             self.pieza = nueva
 
     def caer(self):
+        """Hace que la pieza actual caiga hasta la posición más baja posible."""
         while not colision(self.matriz, self.pieza, (self.x, self.y + 1)):
             self.y += 1
         self.bajar()
 
 def dibujar_tablero(screen, matriz, pieza, offset, color):
+    """Dibuja el tablero de juego y la pieza actual en la pantalla."""
     for y, fila in enumerate(matriz):
         for x, celda in enumerate(fila):
             if celda:
@@ -136,6 +148,7 @@ def dibujar_tablero(screen, matriz, pieza, offset, color):
         pygame.draw.line(screen, GRIS, (0, y * TAM_BLOQUE), (ANCHO, y * TAM_BLOQUE))
 
 def mostrar_texto(screen, texto, tam, color, x, y, centrado=True):
+    """Muestra texto en la pantalla en la posición y con el color indicados."""
     font = pygame.font.SysFont('Arial', tam, bold=True)
     render = font.render(texto, True, color)
     rect = render.get_rect()
@@ -159,6 +172,7 @@ def mostrar_texto(screen, texto, tam, color, x, y, centrado=True):
     screen.blit(render, rect)
 
 def menu_principal(screen):
+    """Muestra el menú principal del juego."""
     colores_titulo = [(0,191,255), (255,0,255), (255,255,0), (0,255,127), (255,69,0)]
     color_idx = 0
     anim = 0
@@ -194,6 +208,7 @@ def menu_principal(screen):
                     exit()
 
 def game_over_menu(screen, puntaje, record):
+    """Muestra el menú de fin de juego."""
     while True:
         screen.fill(NEGRO)
         mostrar_texto(screen, 'GAME OVER', 44, (255, 0, 0), ANCHO // 2, ALTO // 3)
@@ -214,6 +229,7 @@ def game_over_menu(screen, puntaje, record):
                     exit()
 
 def cargar_record():
+    """Carga el récord desde un archivo."""
     try:
         with open('tetris_record.txt', 'r') as f:
             return int(f.read())
@@ -221,10 +237,12 @@ def cargar_record():
         return 0
 
 def guardar_record(puntaje):
+    """Guarda el récord en un archivo."""
     with open('tetris_record.txt', 'w') as f:
         f.write(str(puntaje))
 
 def main():
+    """Función principal del juego."""
     pygame.init()
     # Música retro de fondo
     try:

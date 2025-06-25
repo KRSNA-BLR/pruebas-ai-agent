@@ -18,8 +18,10 @@ GRAVEDAD = 1
 SALTO = -16
 VELOCIDAD_INICIAL = 6
 
+# Clase que representa al cubo jugador
 class Cubo:
     def __init__(self):
+        # Inicializa el rectángulo del cubo y sus propiedades físicas
         self.rect = pygame.Rect(80, ALTO-100, 40, 40)
         self.vel_y = 0
         self.en_suelo = False
@@ -29,11 +31,13 @@ class Cubo:
         self.gravedad_invertida = False
 
     def saltar(self):
+        # Hace que el cubo salte si está en el suelo y no está ya saltando
         if self.en_suelo and not self.saltando:
             self.vel_y = -SALTO if self.gravedad_invertida else SALTO
             self.saltando = True
 
     def actualizar(self, obstaculos, gravedad, suelo_y, techo_y):
+        # Actualiza la posición y estado del cubo según la gravedad y las colisiones
         self.vel_y += gravedad
         if self.vel_y > 16:
             self.vel_y = 16
@@ -62,14 +66,17 @@ class Cubo:
                 self.vivo = False
 
     def dibujar(self, screen):
+        # Dibuja el cubo en la pantalla con su rotación actual
         surf = pygame.Surface((40, 40), pygame.SRCALPHA)
         pygame.draw.rect(surf, COLOR_CUBO, (0, 0, 40, 40), border_radius=8)
         rot = pygame.transform.rotate(surf, self.angulo)
         rect = rot.get_rect(center=self.rect.center)
         screen.blit(rot, rect)
 
+# Clase que representa a los obstáculos en el juego
 class Obstaculo:
     def __init__(self, x, tipo=1, en_techo=False):
+        # Inicializa el rectángulo del obstáculo según su tipo y posición
         self.tipo = tipo
         self.en_techo = en_techo
         if tipo == 1:
@@ -88,10 +95,13 @@ class Obstaculo:
             else:
                 self.rect = pygame.Rect(x, ALTO-100, 20, 100)
     def mover(self, velocidad):
+        # Mueve el obstáculo a la izquierda a una velocidad dada
         self.rect.x -= velocidad
     def fuera_pantalla(self):
+        # Verifica si el obstáculo ha salido de la pantalla
         return self.rect.right < 0
     def dibujar(self, screen):
+        # Dibuja el obstáculo en la pantalla según su tipo
         if self.tipo == 1:
             pygame.draw.rect(screen, COLOR_OBSTACULO, self.rect, border_radius=6)
         elif self.tipo == 2:
@@ -99,18 +109,24 @@ class Obstaculo:
         elif self.tipo == 3:
             pygame.draw.rect(screen, COLOR_OBSTACULO3, self.rect, border_radius=2)
 
+# Clase que representa al ítem de gravedad en el juego
 class ItemGravedad:
     def __init__(self, x):
+        # Inicializa el rectángulo del ítem
         self.rect = pygame.Rect(x, ALTO//2-20, 30, 30)
         self.tiempo = 0
     def mover(self, velocidad):
+        # Mueve el ítem a la izquierda a una velocidad dada
         self.rect.x -= velocidad
     def fuera_pantalla(self):
+        # Verifica si el ítem ha salido de la pantalla
         return self.rect.right < 0
     def dibujar(self, screen):
+        # Dibuja el ítem en forma de elipse en la pantalla
         pygame.draw.ellipse(screen, COLOR_ITEM, self.rect)
         pygame.draw.ellipse(screen, (255,255,255), self.rect, 2)
 
+# Función que dibuja el escenario completo: fondo, suelo, cubo, obstáculos, ítems y texto
 def dibujar_escenario(screen, cubo, obstaculos, items, score, gravedad_invertida):
     screen.fill(COLOR_FONDO)
     if not gravedad_invertida:
@@ -132,6 +148,7 @@ def dibujar_escenario(screen, cubo, obstaculos, items, score, gravedad_invertida
         lose = font.render('¡Perdiste! Presiona R para reiniciar', True, (255, 180, 0))
         screen.blit(lose, (ANCHO//2 - lose.get_width()//2, ALTO//2 - 30))
 
+# Función principal que inicia el juego y controla el bucle principal
 def main():
     pygame.init()
     screen = pygame.display.set_mode((ANCHO, ALTO))
@@ -144,6 +161,7 @@ def main():
         pygame.mixer.music.play(-1)
     except Exception as e:
         print('No se pudo cargar la música:', e)
+    # Función interna para reiniciar el juego
     def reiniciar():
         return Cubo(), [], [], 0, 0, VELOCIDAD_INICIAL, False
     cubo, obstaculos, items, score, frame, velocidad, gravedad_invertida = reiniciar()

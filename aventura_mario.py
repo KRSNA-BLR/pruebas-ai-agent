@@ -188,3 +188,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# aventura_mario.py
+# Comentarios agregados siguiendo principios de clean code en español
+# Este es un juego simple inspirado en Mario Bros, donde el jugador controla a Mario
+# para recolectar monedas, evitar obstáculos y llegar a la bandera para completar el nivel.
+# Las principales clases y funciones están documentadas con comentarios para facilitar
+# la comprensión y el mantenimiento del código.
